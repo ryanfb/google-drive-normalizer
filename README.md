@@ -16,3 +16,5 @@ The `google-sheets-normalizer.rb` script takes any number of Google Sheets [Spre
     bundle exec ./google-sheets-normalizer.rb -n '1qpyC0XzvTcKT6EISywvqESX3A0MwQoFDE8p-Bll4hps'
 
 The script will iterate over all cells in all worksheets and update any cells where the NFC-normalized string differs from the original cell value.
+
+The script also supports a `-a` ("auto-save") flag that will make each change as a separate save, instead of batching them together into one big save per worksheet. I strongly recommend against using this, as it's much slower, but if the batched save takes too long and aborts with a `HTTPClient::KeepAliveDisconnected` error, you can use it to make the initial normalization run complete.

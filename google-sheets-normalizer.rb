@@ -8,11 +8,15 @@ Encoding.default_internal = Encoding::UTF_8
 session = GoogleDrive.saved_session('config.json')
 
 dry_run = false
+auto_save = false
 
 ARGV.each do |spreadsheet_id|
   if spreadsheet_id == '-n'
     $stderr.puts "Dry run mode enabled, no changes will be made"
     dry_run = true
+  elsif spreadsheet_id == '-a'
+    $stderr.puts "Enabling auto-save"
+    auto_save = true
   else
     spreadsheet = session.spreadsheet_by_key(spreadsheet_id)
     $stderr.puts "Normalizing #{spreadsheet_id} = #{spreadsheet.title}"
@@ -29,11 +33,14 @@ ARGV.each do |spreadsheet_id|
               $stderr.puts "Normalized #{row},#{col} = #{normalized_value}"
               $stderr.flush
               worksheet[row,col] = normalized_value
+              if auto_save
+                worksheet.save
+              end
             end
           end
         end
       end
-      unless dry_run
+      unless dry_run || auto_save
         $stderr.puts "Saving worksheet: #{worksheet.title}"
         $stderr.flush
         worksheet.save
