@@ -2,6 +2,8 @@
 
 require 'google_drive'
 
+BATCH_SIZE = 1000
+
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
 
@@ -21,6 +23,7 @@ ARGV.each do |spreadsheet_id|
     spreadsheet = session.spreadsheet_by_key(spreadsheet_id)
     $stderr.puts "Normalizing #{spreadsheet_id} = #{spreadsheet.title}"
     spreadsheet.worksheets.each do |worksheet|
+      i = 0
       $stderr.puts "Normalizing worksheet: #{worksheet.title}"
       (1..worksheet.num_rows).each do |row|
         (1..worksheet.num_cols).each do |col|
@@ -33,14 +36,17 @@ ARGV.each do |spreadsheet_id|
               $stderr.puts "Normalized #{row},#{col} = #{normalized_value}"
               $stderr.flush
               worksheet[row,col] = normalized_value
-              if auto_save
+              i += 1
+              if auto_save && ((i % BATCH_SIZE) == 0)
+                $stderr.puts "Auto-Saving..."
+                $stderr.flush
                 worksheet.save
               end
             end
           end
         end
       end
-      unless dry_run || auto_save
+      unless dry_run
         $stderr.puts "Saving worksheet: #{worksheet.title}"
         $stderr.flush
         worksheet.save
