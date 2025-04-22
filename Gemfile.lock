@@ -33,7 +33,7 @@ GEM
     mini_portile2 (2.8.8)
     multi_json (1.14.1)
     multipart-post (2.1.1)
-    nokogiri (1.18.4)
+    nokogiri (1.18.8)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     os (1.1.0)
